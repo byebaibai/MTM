@@ -1,5 +1,5 @@
 #include "jl.h"
-
+#include <malloc.h>
 
 #define perr(x,y)  (fprintf(stderr, x , y))
 #define prbl (fprintf(stderr,"\n"))
@@ -100,9 +100,9 @@ do_mtap_spec(float *data, int npoints, int kind,
 
 	/*************/
 	double          anrm, norm;
-        double            *ReSpec, *ImSpec;
-	double         *sqr_spec,  *amu;
-	float          *amp, *fv;
+        // double            *ReSpec, *ImSpec;
+	// double           *amu;
+	float          *fv;
 	double          avamp, temp, sqramp;
 	double          sum, *tapsum;
 	/************/
@@ -171,73 +171,64 @@ tapers = (double *) malloc((size_t) len_taps * sizeof(double));
 	/* apply the taper in the loop.  do this nwin times  */
 b = (float *) malloc((size_t) npoints * sizeof(float));
 
-amu = (double *) malloc((size_t) num_freqs * sizeof(double));
-sqr_spec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
-ReSpec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
-ImSpec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
-
+// amu = (double *) malloc((size_t) num_freqs * sizeof(double));
+double amu[num_freq_tap];
+double sqr_spec[num_freq_tap];
+// ReSpec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
+double ReSpec[num_freq_tap];
+// ImSpec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
+double ImSpec[num_freq_tap];
+// amp = (float *) malloc((size_t) klen * sizeof(float));
+float amp[klen];
 
 	
 
 
 	for (iwin = 0; iwin < nwin; iwin++) {
 		kk = iwin * npoints;
-                kf = iwin * num_freqs;
+        kf = iwin * num_freqs;
 
 		for (j = 0; j < npoints; j++)
 			b[j] = data[j] * tapers[kk + j];   /*  application of  iwin-th taper   */
 
-
-
-
-amp = (float *) malloc((size_t) klen * sizeof(float));
-
 		
-	
+		memset(amp, 0, klen * sizeof(float));
 
-
- 
 		mt_get_spec(b, npoints, klen, amp);  /* calculate the eigenspectrum */
 
-	        free(b);
+	    // free(b);
           
-		
 		sum = 0.0;
 
 
 /* get spectrum from real fourier transform    */
 
+        norm = 1.0/(anrm*anrm);
 
-          norm = 1.0/(anrm*anrm);
+        for(i=1; i<num_freqs-1; i++)
+		{
+      			if(2*i+1 > klen) fprintf(stderr,"error in index\n");
+       			if(i+kf > num_freq_tap ) fprintf(stderr,"error in index\n");
 
+            	sqramp = SQR(amp[2*i+1])+SQR(amp[2*i]);
 
+            	ReSpec[i+kf] = amp[2*i];
+            	ImSpec[i+kf] = amp[2*i+1];
 
+            	sqr_spec[i+kf] =    norm*(sqramp);
 
-            for(i=1; i<num_freqs-1; i++){
-       if(2*i+1 > klen) fprintf(stderr,"error in index\n");
-       if(i+kf > num_freq_tap ) fprintf(stderr,"error in index\n");
+             	sum += sqramp;
+        }
+        sqr_spec[0+kf] = norm*SQR(fabs(amp[0]));
+        sqr_spec[num_freqs-1+kf] = norm*SQR(fabs(amp[1]));
 
-            sqramp = SQR(amp[2*i+1])+SQR(amp[2*i]);
+        ReSpec[0+kf] = amp[0];
+        ImSpec[0+kf] = 0.0;
 
-            ReSpec[i+kf] = amp[2*i];
-            ImSpec[i+kf] = amp[2*i+1];
+        ReSpec[num_freqs-1+kf] = amp[1];
+        ImSpec[num_freqs-1+kf] = 0.0;
 
-
-
-            sqr_spec[i+kf] =    norm*(sqramp);
-
-             sum += sqramp;
-            }
-          sqr_spec[0+kf] = norm*SQR(fabs(amp[0]));
-          sqr_spec[num_freqs-1+kf] = norm*SQR(fabs(amp[1]));
-
-            ReSpec[0+kf] = amp[0];
-            ImSpec[0+kf] = 0.0;
-
-            ReSpec[num_freqs-1+kf] = amp[1];
-            ImSpec[num_freqs-1+kf] = 0.0;
-
-             sum += sqr_spec[0+kf] + sqr_spec[num_freqs-1+kf];
+        sum += sqr_spec[0+kf] + sqr_spec[num_freqs-1+kf];
 
         if(num_freqs-1+kf>num_freq_tap )fprintf(stderr,"error in index\n");
 
@@ -249,9 +240,8 @@ amp = (float *) malloc((size_t) klen * sizeof(float));
 			 /* fprintf(stderr," avamp = 0.0! \n"); */ 
 		}
 
-
-		free(amp);
-
+		// printf("\n %d --\n", klen);
+		// free(amp);
 	}
 
 
@@ -354,12 +344,12 @@ fv = (float *) malloc((size_t) num_freqs * sizeof(float));
 
 /*  free up memory and return  */
 
-        free(amu);
+        // free(amu);
 
-	free(sqr_spec);
-	free(ReSpec);
+	// free(sqr_spec);
+	// free(ReSpec);
 
-	free(ImSpec);
+	// free(ImSpec);
 
 	free(lambda);
 

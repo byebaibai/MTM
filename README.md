@@ -1,6 +1,6 @@
 # MTM
 ## Version
-20060918
+20040527
 ## Environment
 * gcc version 7.5.0
 * make 4.1
@@ -9,5 +9,5 @@
 ```
 # git clone the repo and checkout this branch
 cd src/
-make -j 20 testmt
+make -j 20
 ```

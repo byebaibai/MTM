@@ -1,5 +1,5 @@
 #include "jl.h"
-
+#include <malloc.h>
 
 
 #define DIAG1 0
@@ -32,7 +32,7 @@ multitap(int num_points, int nwin, double *lam, float npi, double *tapers, doubl
 	char           *k1[4];
 
 	char            name[81];
-	double         *scratch1, *scratch2, *scratch3, *scratch4, *scratch6;
+	double         *scratch1, *scratch2, *scratch3, *scratch4;
 
 
 	/* need to initialize iwflag = 0 */
@@ -40,7 +40,7 @@ multitap(int num_points, int nwin, double *lam, float npi, double *tapers, doubl
 	double         *ell;
 	int             key, nbin, npad;
 	int            *ip;
-	double         *evecs;
+	// double         *evecs;
 	double         *zee;
 
 	long            len;
@@ -59,19 +59,14 @@ multitap(int num_points, int nwin, double *lam, float npi, double *tapers, doubl
 
 	diag = (double *) malloc((size_t) num_points * sizeof(double));
 
-        offdiag = (double *) malloc((size_t) num_points * sizeof(double));
+    offdiag = (double *) malloc((size_t) num_points * sizeof(double));
 	offsq = (double *) malloc((size_t) num_points * sizeof(double));
-
 	scratch1 = (double *) malloc((size_t) num_points * sizeof(double));
 	scratch2 = (double *) malloc((size_t) num_points * sizeof(double));
 	scratch3 = (double *) malloc((size_t) num_points * sizeof(double));
 	scratch4 = (double *) malloc((size_t) num_points * sizeof(double));
-	scratch6 = (double *) malloc((size_t) num_points * sizeof(double));
-
-	
-	
-
-
+	// double *scratch6 = (double *) malloc((size_t) num_points * sizeof(double));
+	double scratch6[num_points];
 
 	/* make the diagonal elements of the tridiag matrix  */
 
@@ -104,7 +99,7 @@ multitap(int num_points, int nwin, double *lam, float npi, double *tapers, doubl
 
 	len = num_points * nwin;
 
-	evecs = (double *) malloc((size_t) len * sizeof(double));
+	double evecs[len];
 	
 
 
@@ -118,7 +113,7 @@ multitap(int num_points, int nwin, double *lam, float npi, double *tapers, doubl
 	free(scratch2);
 	free(scratch3);
 	free(scratch4);
-	free(scratch6);
+	// free(scratch6);
 
 
 
@@ -199,7 +194,7 @@ multitap(int num_points, int nwin, double *lam, float npi, double *tapers, doubl
 	free(offsq);
 	free(ip);
 
-	free(evecs);
+	// free(evecs);
 
 
 	return 1;
