@@ -1,6 +1,6 @@
 #include <stdio.h>
 /* kern and Ritch page 26*/
-int getline(FILE *input,char s[],int lim)
+int mtm_getline(FILE *input,char s[],int lim)
   {
   int c,i;
 

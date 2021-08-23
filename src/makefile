@@ -14,14 +14,14 @@ adwait.o:	adwait.c
 ftest.o:	ftest.c
 drivetap.o:	drivetap.c
 sigstuff.o:	sigstuff.c
-getline.o:	getline.c
+mtm_getline.o:	mtm_getline.c
 jrealft.o:	jrealft.c 
 jtridib.o:	jtridib.c
 jtinvit.o:	jtinvit.c
 nrutil.o:	nrutil.c
 jfour1.o:	jfour1.c
 
-TAP=multitap.o mult_tap_spec.o hires.o adwait.o ftest.o sigstuff.o getline.o jrealft.o jtridib.o  jtinvit.o nrutil.o jfour1.o
+TAP=multitap.o mult_tap_spec.o hires.o adwait.o ftest.o sigstuff.o mtm_getline.o jrealft.o jtridib.o  jtinvit.o nrutil.o jfour1.o
 testmt:	drivetap.o $(TAP)
 	$(CC)  -o   testmt  drivetap.o $(TAP) -lm
 

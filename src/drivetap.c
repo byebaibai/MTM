@@ -13,7 +13,7 @@
 
 #define NRANSI
 
-int getline(FILE *input,char s[],int lim);
+int mtm_getline(FILE *input,char s[],int lim);
 
 int get_pow_2(int inum);
 
@@ -148,7 +148,7 @@ void main(int argc, char **argv)
   
   /*k = fscanf(inf, "%s %d %f %f %f", &name, &num_points, &dt, &t1, &t2);*/
   
-  k = getline(inf, line, 100);
+  k = mtm_getline(inf, line, 100);
   
   k = sscanf(line, "%d %f", &num_points, &dt);
   
