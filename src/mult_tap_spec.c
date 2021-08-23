@@ -1,20 +1,9 @@
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#define PI 3.14159265358979
-#define ABS(a) ((a) < (0) ? -(a) : (a))
-
-#define NRANSI
-/* #include "jl.h" */
-#include "nrutil.h"
-/* #include "nr.h" */
+#include "jl.h"
 
 
 #define perr(x,y)  (fprintf(stderr, x , y))
 #define prbl (fprintf(stderr,"\n"))
 
-void four1(float data[], unsigned long nn, int isign);
 
 void zero_pad(float  output[], int start , int olength);
 int 
@@ -27,10 +16,6 @@ int  multitap(int n, int nwin, double *el,  float npi, double *tapers, double *t
 
 void  get_F_values(double *sr, double *si, int nf, int nwin,float *Fvalue, double *b);
 
-void jrealft(float data[], unsigned long n, int isign);
-
-
-
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
 
@@ -38,7 +23,8 @@ void jrealft(float data[], unsigned long n, int isign);
 /*------------------------------------------------------------*/
 /*------------------------------------------------------------*/
 
-/** FUNC DEF */ void  mt_get_spec(float *series, int inum, int klength, float *amp)
+void 
+mt_get_spec(float *series, int inum, int klength, float *amp)
 {
 /*    series = input time series
       inum   = length of time series
@@ -61,7 +47,7 @@ void jrealft(float data[], unsigned long n, int isign);
 	for (i = 0; i < inum; i++) {
 		
 		amp[i] = series[i];
- 	
+	
 	}
 
        zero_pad(amp, inum, klength);
@@ -81,7 +67,8 @@ void jrealft(float data[], unsigned long n, int isign);
 
 }
 
-/** FUNC DEF */  void  do_mtap_spec(float *data, int npoints, int kind,
+void 
+do_mtap_spec(float *data, int npoints, int kind,
 	    int nwin, float npi, int inorm, float dt, float *ospec, float *dof, float *Fvalues, int klen)
 {
 /*
@@ -103,7 +90,7 @@ void jrealft(float data[], unsigned long n, int isign);
 	double         *lambda, *tapers;
 	long            len, longlen;
 	float          *xt;
-	FILE           *fopen(), *inf, *tap_file;
+	FILE           *fopen(), *inf, *tapfile;
         FILE            *dof_file;
 
 	int             logg;
@@ -133,17 +120,14 @@ void jrealft(float data[], unsigned long n, int isign);
    tapsum = sum of each taper, saved for use in adaptive weighting  
    tapers =  matrix of slepian tapers, packed in a 1D double array    
 */
+lambda = (double *) malloc((size_t) nwin * sizeof(double));
+tapsum = (double *) malloc((size_t) nwin * sizeof(double));
 
 
-/*fprintf(stderr, "From do_mtap_spec:  npoints=%d kind=%d nwin=%d npi=%f inorm=%d dt=%f klen=%d\n",npoints, kind, nwin, npi, inorm, dt, klen );
-               for(i=0; i< npoints; i++)
-               fprintf(stderr, "%d %e\n",i, data[i]);
-*/
-
-	lambda = dvector((long)0, (long)nwin);
-        tapsum=dvector((long)0,(long)nwin);
+        
 	len_taps = npoints * nwin;
-	tapers = dvector((long)0,(long) len_taps);
+
+tapers = (double *) malloc((size_t) len_taps * sizeof(double));
 
              num_freqs = 1+klen/2;
              num_freq_tap = num_freqs*nwin;
@@ -154,14 +138,11 @@ void jrealft(float data[], unsigned long n, int isign);
 
 	k = multitap(npoints, nwin, lambda,  npi, tapers, tapsum);
 #if 0
-
-        tap_file = fopen("taper_file", "w");
         /* print out tapers for curiosity  */
         for(i=0; i<npoints; i++){
-         for(j=0; j<nwin; j++)fprintf(tap_file,"%15.10f ",tapers[i+j*npoints]);
-          fprintf(tap_file,"\n");
+         for(j=0; j<nwin; j++)fprintf(stderr,"%d %15.10f ",i,tapers[i+j*npoints]);
+          prbl;
           }
-          fclose(tap_file);
 #endif
 
 
@@ -172,10 +153,6 @@ void jrealft(float data[], unsigned long n, int isign);
 	anrm = 1.;
 
 	switch (inorm) {
-	case 0:
-		anrm = 1.;
-		break;
-
 	case 1:
 		anrm = npoints;
 		break;
@@ -192,12 +169,15 @@ void jrealft(float data[], unsigned long n, int isign);
 
 	
 	/* apply the taper in the loop.  do this nwin times  */
+b = (float *) malloc((size_t) npoints * sizeof(float));
 
-	b = vector((long)0, (long)npoints);
-	amu = dvector((long)0,(long) num_freqs);
-	sqr_spec = dvector((long)0,(long) num_freq_tap);
-        ReSpec = dvector((long)0,(long) num_freq_tap);
-        ImSpec = dvector((long)0,(long) num_freq_tap);
+amu = (double *) malloc((size_t) num_freqs * sizeof(double));
+sqr_spec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
+ReSpec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
+ImSpec = (double *) malloc((size_t) num_freq_tap * sizeof(double));
+
+
+	
 
 
 	for (iwin = 0; iwin < nwin; iwin++) {
@@ -206,12 +186,20 @@ void jrealft(float data[], unsigned long n, int isign);
 
 		for (j = 0; j < npoints; j++)
 			b[j] = data[j] * tapers[kk + j];   /*  application of  iwin-th taper   */
-		
-		amp = vector((long)0,(long) klen);
 
+
+
+
+amp = (float *) malloc((size_t) klen * sizeof(float));
+
+		
+	
+
+
+ 
 		mt_get_spec(b, npoints, klen, amp);  /* calculate the eigenspectrum */
 
-	       
+	        free(b);
           
 		
 		sum = 0.0;
@@ -222,7 +210,6 @@ void jrealft(float data[], unsigned long n, int isign);
 
           norm = 1.0/(anrm*anrm);
 
-     
 
 
 
@@ -239,7 +226,7 @@ void jrealft(float data[], unsigned long n, int isign);
 
             sqr_spec[i+kf] =    norm*(sqramp);
 
-             sum += sqr_spec[i+kf];
+             sum += sqramp;
             }
           sqr_spec[0+kf] = norm*SQR(fabs(amp[0]));
           sqr_spec[num_freqs-1+kf] = norm*SQR(fabs(amp[1]));
@@ -263,37 +250,15 @@ void jrealft(float data[], unsigned long n, int isign);
 		}
 
 
-		free_vector(amp,(long) 0,(long) klen);
+		free(amp);
 
 	}
 
-                 free_vector(b, (long)0, (long)npoints);
-		fv = vector((long)0,(long) num_freqs);
 
+fv = (float *) malloc((size_t) num_freqs * sizeof(float));
+
+	
         /* choice of hi-res or adaptive weighting for spectra    */
-
-
-#if 0
-		if ((inf = fopen("mspec.file", "w")) == NULL) {
-			fprintf(stderr, "mspec.file unable to open\n");
-			return;
-		}
-	
-		for (i = 0; i < num_freqs; i++) {
-	for (iwin = 0; iwin < nwin; iwin++) {
-	
-		kf = iwin * num_freqs;
-
-			fprintf(inf, "%f %f ", ReSpec[i + kf], ImSpec[i + kf]);
-		}
-             	fprintf(inf, "\n");
-	}
-	
-	fclose(inf);
-
-#endif 
-
-
 
 	switch (kind) {
 	case 1:
@@ -327,10 +292,6 @@ void jrealft(float data[], unsigned long n, int isign);
 
 
 		switch (inorm) {
-		case 0:
-			avar = avar / npoints;
-			break;
-
 		case 1:
 			avar = avar / (npoints * npoints);
 			break;
@@ -349,11 +310,11 @@ void jrealft(float data[], unsigned long n, int isign);
 		}
 
 		 
+	dcf = (double *) malloc((size_t) num_freq_tap * sizeof(double));
+	degf = (double *) malloc((size_t) num_freqs * sizeof(double));
 
 
-		dcf = dvector((long)0,(long) num_freq_tap);
-		degf = dvector((long)0,(long) num_freqs);
-
+	
 	
 
 
@@ -361,7 +322,7 @@ void jrealft(float data[], unsigned long n, int isign);
 
                 get_F_values(ReSpec, ImSpec, num_freqs, nwin, fv, tapsum);
 
-#if 0
+#if 1
            /* dump out the degrees of freedom to a file for later inspection  */
               	if ((dof_file = fopen("dof_file", "w")) == NULL) {
 		fprintf(stderr, "dof unable to open\n");
@@ -383,9 +344,9 @@ void jrealft(float data[], unsigned long n, int isign);
 
 
                 
-		free_dvector(dcf,(long)0,(long) num_freq_tap);
-		free_dvector(degf,(long)0,(long) num_freqs);
-		free_vector(fv,(long)0,(long) num_freqs);
+		free(dcf);
+		free(degf);
+		free(fv);
 
 
 		break;
@@ -393,17 +354,16 @@ void jrealft(float data[], unsigned long n, int isign);
 
 /*  free up memory and return  */
 
-        free_dvector(amu,(long)0,(long) num_freqs);
-        
+        free(amu);
 
-	free_dvector(sqr_spec, (long)0,(long) num_freq_tap);
-	free_dvector(ReSpec, (long)0,(long) num_freq_tap);
+	free(sqr_spec);
+	free(ReSpec);
 
-	free_dvector(ImSpec, (long)0,(long) num_freq_tap);
+	free(ImSpec);
 
-	free_dvector(lambda,(long) 0,(long) nwin);
+	free(lambda);
 
-	free_dvector(tapers,(long) 0, (long)len_taps);
-	free_dvector(tapsum,(long) 0, (long)nwin);
+	free(tapers);
+
 
 }

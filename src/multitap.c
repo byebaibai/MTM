@@ -1,28 +1,9 @@
-#include <stdio.h>
-#include <math.h>
-#define PI 3.14159265358979
-#define ABS(a) ((a) < (0) ? -(a) : (a))
-
-
-
-#define   NRANSI
-#include "nrutil.h"
-/* #include "nr.h" */
+#include "jl.h"
 
 
 
 #define DIAG1 0
 #define MAX(a,b) ((a) >= (b) ? (a) : (b))
-
-
-
-int jtridib_(int *n, double *eps1, double *d, double *e, double *e2, double *lb, double *ub, int *m11, int *m, double *w, int *ind, int *ierr, 
-	     double *rv4, double *rv5);
-
- int jtinvit_(int *nm, int *n, double *d, double *e, double *e2, 
-			      int *m, double *w, int *ind,double *z, int *ierr, double *rv1, double *rv2, 
-	      double *rv3, double *rv4, double *rv6);
-
 
 void 
 blank()
@@ -30,7 +11,8 @@ blank()
 	fprintf(stderr, "\n");
 }
 
-/** FUNC DEF */ int  multitap(int num_points, int nwin, double *lam, float npi, double *tapers, double *tapsum)
+int 
+multitap(int num_points, int nwin, double *lam, float npi, double *tapers, double *tapsum)
 {
 	/*
 	 * get the multitaper slepian functions: 
@@ -72,17 +54,22 @@ blank()
 	ww = (double) (anpi) / an;	/* this corresponds to P&W's W value  */
 	cs = cos(TWOPI * ww);
 
-	ell = dvector((long) 0, (long) nwin);
 
-	diag = dvector((long) 0, (long) num_points);
-	offdiag = dvector((long) 0, (long) num_points);
-	offsq = dvector((long) 0, (long) num_points);
+	ell = (double *) malloc((size_t) nwin * sizeof(double));
 
-	scratch1 = dvector((long) 0, (long) num_points);
-	scratch2 = dvector((long) 0, (long) num_points);
-	scratch3 = dvector((long) 0, (long) num_points);
-	scratch4 = dvector((long) 0, (long) num_points);
-	scratch6 = dvector((long) 0, (long) num_points);
+	diag = (double *) malloc((size_t) num_points * sizeof(double));
+
+        offdiag = (double *) malloc((size_t) num_points * sizeof(double));
+	offsq = (double *) malloc((size_t) num_points * sizeof(double));
+
+	scratch1 = (double *) malloc((size_t) num_points * sizeof(double));
+	scratch2 = (double *) malloc((size_t) num_points * sizeof(double));
+	scratch3 = (double *) malloc((size_t) num_points * sizeof(double));
+	scratch4 = (double *) malloc((size_t) num_points * sizeof(double));
+	scratch6 = (double *) malloc((size_t) num_points * sizeof(double));
+
+	
+	
 
 
 
@@ -98,8 +85,7 @@ blank()
 	eps = 1.0e-13;
 	m11 = 1;
 
-
-	ip = ivector((long) 0, (long) nwin);
+	ip = (int *) malloc((size_t) nwin * sizeof(int));
 
 	/* call the eispac routines to invert the tridiagonal system */
 
@@ -117,7 +103,9 @@ blank()
 
 
 	len = num_points * nwin;
-	evecs = dvector((long) 0, (long) len);
+
+	evecs = (double *) malloc((size_t) len * sizeof(double));
+	
 
 
 	jtinvit_(&num_points, &num_points, diag, offdiag, offsq, &nwin, lam, ip, evecs, &ierr,
@@ -126,11 +114,11 @@ blank()
 
 
 
-	free_dvector(scratch1, (long) 0, (long) num_points);
-	free_dvector(scratch2, (long) 0, (long) num_points);
-	free_dvector(scratch3, (long) 0, (long) num_points);
-	free_dvector(scratch4, (long) 0, (long) num_points);
-	free_dvector(scratch6, (long) 0, (long) num_points);
+	free(scratch1);
+	free(scratch2);
+	free(scratch3);
+	free(scratch4);
+	free(scratch6);
 
 
 
@@ -205,13 +193,13 @@ blank()
 	/* Free Memory */
 
 
-	free_dvector(ell, (long) 0, (long) nwin);
-	free_dvector(diag, (long) 0, (long) num_points);
-	free_dvector(offdiag, (long) 0, (long) num_points);
-	free_dvector(offsq, (long) 0, (long) num_points);
-	free_ivector(ip, (long) 0, (long) nwin);
+	free(ell);
+	free(diag);
+	free(offdiag);
+	free(offsq);
+	free(ip);
 
-	free_dvector(evecs, (long) 0, (long) len);
+	free(evecs);
 
 
 	return 1;

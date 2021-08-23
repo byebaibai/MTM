@@ -12,17 +12,17 @@
 
 /*     ------------------------------------------------------------------ */
 
-/* Subroutine */ int jtinvit_(int *nm, int *n, double *d, double *e, double *e2, 
-			      int *m, double *w, int *ind,double *z, int *ierr, double *rv1, double *rv2, 
-			      double *rv3, double *rv4, double *rv6)
+/* Subroutine */ int jtinvit_(int *nm, int *n, double *d, double *e, double *e2, int *m, double *w, int *ind, double *z, int *ierr, double *rv1, double *rv2, 
+	double *rv3, double *rv4, double *rv6)
+
 {
     /* Initialized data */
 
     static double machep = 1.25e-15;
 
     /* System generated locals */
-    int z_dim1, z_offset, i__1, i__2, i__3;
-    double d__1, d__2;
+    int z_dim1, z_offset, i1, i2, i3;
+    double d1, d2;
 
     /* Builtin functions */
     double sqrt();
@@ -138,8 +138,8 @@
 L100:
     p = q + 1;
 
-    i__1 = *n;
-    for (q = p; q <= i__1; ++q) {
+    i1 = *n;
+    for (q = p; q <= i1; ++q) {
 	if (q == *n) {
 	    goto L140;
 	}
@@ -153,8 +153,8 @@ L140:
     ++tag;
     s = 0;
 
-    i__1 = *m;
-    for (r = 1; r <= i__1; ++r) {
+    i1 = *m;
+    for (r = 1; r <= i1; ++r) {
 	if (ind[r] != tag) {
 	    goto L920;
 	}
@@ -171,13 +171,13 @@ L140:
 	rv6[p] = 1.;
 	goto L870;
 L490:
-	norm = (d__1 = d[p], abs(d__1));
+	norm = (d1 = d[p], abs(d1));
 	ip = p + 1;
 
-	i__2 = q;
-	for (i = ip; i <= i__2; ++i) {
+	i2 = q;
+	for (i = ip; i <= i2; ++i) {
 /* L500: */
-	    norm = norm + (d__1 = d[i], abs(d__1)) + (d__2 = e[i], abs(d__2));
+	    norm = norm + (d1 = d[i], abs(d1)) + (d2 = e[i], abs(d2));
 	}
 /*     :::::::::: eps2 is the criterion for grouping, */
 /*                eps3 replaces zero pivots and equal */
@@ -195,7 +195,7 @@ L505:
 	goto L520;
 /*     :::::::::: look for close or coincident roots :::::::::: */
 L510:
-	if ((d__1 = x1 - x0, abs(d__1)) >= eps2) {
+	if ((d1 = x1 - x0, abs(d1)) >= eps2) {
 	    goto L505;
 	}
 	++group;
@@ -207,13 +207,13 @@ L510:
 L520:
 	v = 0.;
 
-	i__2 = q;
-	for (i = p; i <= i__2; ++i) {
+	i2 = q;
+	for (i = p; i <= i2; ++i) {
 	    rv6[i] = uk;
 	    if (i == p) {
 		goto L560;
 	    }
-	    if ((d__1 = e[i], abs(d__1)) < abs(u)) {
+	    if ((d1 = e[i], abs(d1)) < abs(u)) {
 		goto L540;
 	    }
 /*     :::::::::: warning -- a divide check may occur here if */
@@ -254,8 +254,8 @@ L580:
 /*     :::::::::: back substitution */
 /*                for i=q step -1 until p do -- :::::::::: */
 L600:
-	i__2 = q;
-	for (ii = p; ii <= i__2; ++ii) {
+	i2 = q;
+	for (ii = p; ii <= i2; ++ii) {
 	    i = p + q - ii;
 	    rtem = rv6[i] - u * rv2[i] - v * rv3[i];
 	    rv6[i] = (rtem) / rv1[i];
@@ -270,8 +270,8 @@ L600:
 	}
 	j = r;
 
-	i__2 = group;
-	for (jj = 1; jj <= i__2; ++jj) {
+	i2 = group;
+	for (jj = 1; jj <= i2; ++jj) {
 L630:
 	    --j;
 	    if (ind[j] != tag) {
@@ -279,14 +279,14 @@ L630:
 	    }
 	    xu = 0.;
 
-	    i__3 = q;
-	    for (i = p; i <= i__3; ++i) {
+	    i3 = q;
+	    for (i = p; i <= i3; ++i) {
 /* L640: */
 		xu += rv6[i] * z[i + j * z_dim1];
 	    }
 
-	    i__3 = q;
-	    for (i = p; i <= i__3; ++i) {
+	    i3 = q;
+	    for (i = p; i <= i3; ++i) {
 /* L660: */
 		rv6[i] -= xu * z[i + j * z_dim1];
 	    }
@@ -297,10 +297,10 @@ L630:
 L700:
 	norm = 0.;
 
-	i__2 = q;
-	for (i = p; i <= i__2; ++i) {
+	i2 = q;
+	for (i = p; i <= i2; ++i) {
 /* L720: */
-	    norm += (d__1 = rv6[i], abs(d__1));
+	    norm += (d1 = rv6[i], abs(d1));
 	}
 
 	if (norm >= 1.) {
@@ -322,16 +322,16 @@ L700:
 L740:
 	xu = eps4 / norm;
 
-	i__2 = q;
-	for (i = p; i <= i__2; ++i) {
+	i2 = q;
+	for (i = p; i <= i2; ++i) {
 /* L760: */
 	    rv6[i] *= xu;
 	}
 /*     :::::::::: elimination operations on next vector */
 /*                iterate :::::::::: */
 L780:
-	i__2 = q;
-	for (i = ip; i <= i__2; ++i) {
+	i2 = q;
+	for (i = ip; i <= i2; ++i) {
 	    u = rv6[i];
 /*     :::::::::: if rv1(i-1) .eq. e(i), a row interchange */
 /*                was performed earlier in the */
@@ -358,25 +358,25 @@ L830:
 L840:
 	u = 0.;
 
-	i__2 = q;
-	for (i = p; i <= i__2; ++i) {
+	i2 = q;
+	for (i = p; i <= i2; ++i) {
 /* L860: */
 /* Computing 2nd power */
-	    d__1 = rv6[i];
-	    u += d__1 * d__1;
+	    d1 = rv6[i];
+	    u += d1 * d1;
 	}
 
 	xu = 1. / sqrt(u);
 
 L870:
-	i__2 = *n;
-	for (i = 1; i <= i__2; ++i) {
+	i2 = *n;
+	for (i = 1; i <= i2; ++i) {
 /* L880: */
 	    z[i + r * z_dim1] = 0.;
 	}
 
-	i__2 = q;
-	for (i = p; i <= i__2; ++i) {
+	i2 = q;
+	for (i = p; i <= i2; ++i) {
 /* L900: */
 	    z[i + r * z_dim1] = rv6[i] * xu;
 	}

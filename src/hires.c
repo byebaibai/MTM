@@ -1,13 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #define PI 3.14159265358979
-#define ABS(a) ((a) < (0) ? -(a) : (a))
-
-/* #include "jl.h" */
-
-#define   NRANSI
-#include "nrutil.h"
-/* #include "nr.h" */
+#define ABS(a) ((a) < (0) ? (-a) : (a))
+#include "jl.h"
 
 
 
@@ -22,7 +17,8 @@
 /*-------------------------------------------------------*/
 /*-------------  HIRES  ----------------------------------*/
 /*-------------------------------------------------------*/
-/** FUNC DEF */ int hires(double *sqr_spec,  double *el, int nwin, int num_freq, double *ares)
+int
+hires(double *sqr_spec,  double *el, int nwin, int num_freq, double *ares)
 {
 	int             i, j, k, kpoint;
 	float           a;

@@ -23,8 +23,8 @@ int jtridib_(int *n, double *eps1, double *d, double *e, double *e2, double *lb,
     static double machep = 1.25e-15;
 
     /* System generated locals */
-    int i__1, i__2;
-    double d__1, d__2, d__3;
+    int i1, i2;
+    double d1, d2, d3;
 
     /* Local variables */
     static int i, j, k, l, p, q, r, s;
@@ -136,24 +136,24 @@ int jtridib_(int *n, double *eps1, double *d, double *e, double *e2, double *lb,
     u = 0.;
 /*     :::::::::: look for small sub-diagonal entries and determine an */
 /*                interval containing all the eigenvalues :::::::::: */
-    i__1 = *n;
-    for (i = 1; i <= i__1; ++i) {
+    i1 = *n;
+    for (i = 1; i <= i1; ++i) {
 	x1 = u;
 	u = 0.;
 	if (i != *n) {
-	    u = (d__1 = e[i + 1], abs(d__1));
+	    u = (d1 = e[i + 1], abs(d1));
 	}
 /* Computing MIN */
-	d__1 = d[i] - (x1 + u);
-	xu = min(d__1,xu);
+	d1 = d[i] - (x1 + u);
+	xu = min(d1,xu);
 /* Computing MAX */
-	d__1 = d[i] + (x1 + u);
-	x0 = max(d__1,x0);
+	d1 = d[i] + (x1 + u);
+	x0 = max(d1,x0);
 	if (i == 1) {
 	    goto L20;
 	}
-	if ((d__1 = e[i], abs(d__1)) > machep * ((d__2 = d[i], abs(d__2)) + (
-		d__3 = d[i - 1], abs(d__3)))) {
+	if ((d1 = e[i], abs(d1)) > machep * ((d2 = d[i], abs(d2)) + (
+		d3 = d[i - 1], abs(d3)))) {
 	    goto L40;
 	}
 L20:
@@ -163,8 +163,8 @@ L40:
     }
 
 /* Computing MAX */
-    d__1 = abs(xu), d__2 = abs(x0);
-    x1 = max(d__1,d__2) * machep * (double) (*n);
+    d1 = abs(xu), d2 = abs(x0);
+    x1 = max(d1,d2) * machep * (double) (*n);
     xu -= x1;
     t1 = xu;
     x0 += x1;
@@ -186,9 +186,9 @@ L50:
     }
     goto L320;
 L60:
-    if ((i__1 = s - m1) < 0) {
+    if ((i1 = s - m1) < 0) {
 	goto L65;
-    } else if (i__1 == 0) {
+    } else if (i1 == 0) {
 	goto L73;
     } else {
 	goto L70;
@@ -211,9 +211,9 @@ L75:
     isturm = 2;
     goto L50;
 L80:
-    if ((i__1 = s - m22) < 0) {
+    if ((i1 = s - m22) < 0) {
 	goto L65;
-    } else if (i__1 == 0) {
+    } else if (i1 == 0) {
 	goto L85;
     } else {
 	goto L70;
@@ -235,23 +235,23 @@ L100:
     x0 = d[p];
     u = 0.;
 
-    i__1 = *n;
-    for (q = p; q <= i__1; ++q) {
+    i1 = *n;
+    for (q = p; q <= i1; ++q) {
 	x1 = u;
 	u = 0.;
 	v = 0.;
 	if (q == *n) {
 	    goto L110;
 	}
-	u = (d__1 = e[q + 1], abs(d__1));
+	u = (d1 = e[q + 1], abs(d1));
 	v = e2[q + 1];
 L110:
 /* Computing MIN */
-	d__1 = d[q] - (x1 + u);
-	xu = min(d__1,xu);
+	d1 = d[q] - (x1 + u);
+	xu = min(d1,xu);
 /* Computing MAX */
-	d__1 = d[q] + (x1 + u);
-	x0 = max(d__1,x0);
+	d1 = d[q] + (x1 + u);
+	x0 = max(d1,x0);
 	if (v == 0.) {
 	    goto L140;
 	}
@@ -260,8 +260,8 @@ L110:
 
 L140:
 /* Computing MAX */
-    d__1 = abs(xu), d__2 = abs(x0);
-    x1 = max(d__1,d__2) * machep;
+    d1 = abs(xu), d2 = abs(x0);
+    x1 = max(d1,d2) * machep;
     if (*eps1 <= 0.) {
 	*eps1 = -x1;
     }
@@ -279,11 +279,11 @@ L140:
 L180:
     x1 *= (double) (q - p + 1);
 /* Computing MAX */
-    d__1 = t1, d__2 = xu - x1;
-    *lb = max(d__1,d__2);
+    d1 = t1, d2 = xu - x1;
+    *lb = max(d1,d2);
 /* Computing MIN */
-    d__1 = t2, d__2 = x0 + x1;
-    *ub = min(d__1,d__2);
+    d1 = t2, d2 = x0 + x1;
+    *ub = min(d1,d2);
     x1 = *lb;
     isturm = 3;
     goto L320;
@@ -301,8 +301,8 @@ L220:
     x0 = *ub;
     isturm = 5;
 
-    i__1 = m2;
-    for (i = m1; i <= i__1; ++i) {
+    i1 = m2;
+    for (i = m1; i <= i1; ++i) {
 	rv5[i] = *ub;
 	rv4[i] = *lb;
 /* L240: */
@@ -315,8 +315,8 @@ L220:
 L250:
     xu = *lb;
 /*     :::::::::: for i=k step -1 until m1 do -- :::::::::: */
-    i__1 = k;
-    for (ii = m1; ii <= i__1; ++ii) {
+    i1 = k;
+    for (ii = m1; ii <= i1; ++ii) {
 	i = m1 + k - ii;
 	if (xu >= rv4[i]) {
 	    goto L260;
@@ -342,12 +342,12 @@ L320:
     s = p - 1;
     u = 1.;
 
-    i__1 = q;
-    for (i = p; i <= i__1; ++i) {
+    i1 = q;
+    for (i = p; i <= i1; ++i) {
 	if (u != 0.) {
 	    goto L325;
 	}
-	v = (d__1 = e[i], abs(d__1)) / machep;
+	v = (d1 = e[i], abs(d1)) / machep;
 	if (e2[i] == 0.) {
 	    v = 0.;
 	}
@@ -404,8 +404,8 @@ L900:
     j = 1;
     k = m1;
 
-    i__1 = r;
-    for (l = 1; l <= i__1; ++l) {
+    i1 = r;
+    for (l = 1; l <= i1; ++l) {
 	if (j > s) {
 	    goto L910;
 	}
@@ -416,8 +416,8 @@ L900:
 	    goto L915;
 	}
 
-	i__2 = s;
-	for (ii = j; ii <= i__2; ++ii) {
+	i2 = s;
+	for (ii = j; ii <= i2; ++ii) {
 	    i = l + s - ii;
 	    w[i + 1] = w[i];
 	    ind[i + 1] = ind[i];

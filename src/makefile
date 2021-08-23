@@ -1,32 +1,34 @@
 CFL=-g
 F77=f77 -v
 .f.o: ; $(F77) $(CFL) -c $*.f
-.c.o: ; ${CC} ${CFLAGS}  -c $*.c
-CFLAGS          =  ${INCLUDE} $(LDFLAGS)
+.c.o: ; ${CC}   -c $*.c
 
-CC = gcc -g -Wall $(CFLAGS)
+CC = gcc -g 
 
 
-multitap.o:	multitap.c
-mult_tap_spec.o:	mult_tap_spec.c
-hires.o:	hires.c
-adwait.o:	adwait.c
-ftest.o:	ftest.c
-drivetap.o:	drivetap.c
-sigstuff.o:	sigstuff.c
-mtm_getline.o:	mtm_getline.c
-jrealft.o:	jrealft.c 
-jtridib.o:	jtridib.c
-jtinvit.o:	jtinvit.c
-nrutil.o:	nrutil.c
-jfour1.o:	jfour1.c
 
-TAP=multitap.o mult_tap_spec.o hires.o adwait.o ftest.o sigstuff.o mtm_getline.o jrealft.o jtridib.o  jtinvit.o nrutil.o jfour1.o
-testmt:	drivetap.o $(TAP)
-	$(CC)  -o   testmt  drivetap.o $(TAP) -lm
+INCLUDE         =-I$(NRCINC)
 
+DEST=.
+
+
+ICEPACK=jtridib.o jtinvit.o 
+SIGU=sigstuff.o jfour1.o jrealft.o 
+TAP=multitap.o mult_tap_spec.o hires.o adwait.o ftest.o 
+
+sendmt: sendtap.o $(TAP) $(ICEPACK) $(SIGU)
+	$(CC)  -o $(DEST)/sendmt  sendtap.o $(TAP) $(SIGU) $(ICEPACK) -lm
+jtap: jtap.o jfour1.o jrealft.o
+	$(CC)  -o $(DEST)/jtap jtap.o jfour1.o jrealft.o -lm
+
+
+DAT=`date +%Y.%m.%d`
+TARFILE=MTM-2.2_$(DAT).tar
 
 clean:
-	rm -f testmt *.o core
+	rm -f *.o core sendmt jtap
 
-all:	testmt
+all:
+	make sendmt jtap
+tar:
+	tar cvf $(TARFILE) *.[ch] makefile njeff.dat

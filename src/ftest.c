@@ -1,28 +1,30 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#define PI 3.14159265358979
-#define ABS(a) ((a) < (0) ? -(a) : (a))
+#include "jl.h"
 
-#define NRANSI
-/* #include "jl.h" */
-#include "nrutil.h"
-/* #include "nr.h" */
 
-/** FUNC DEF */ void  get_F_values(double *sr, double *si, int nf, int nwin, float *Fvalue, double *b)
+void 
+get_F_values(double *sr, double *si, int nf, int nwin, float *Fvalue, double *b)
 {
-	/*
-	 * b is fft of slepian eigentapers at zero freq sr si are the
-	 * eigenspectra amu contains line frequency estimates and f-test
-	 * parameter
+	/*    input:
+             sr si are the  real and imaginary parts of the eigenspectra 
+              nf = number of frequency points
+              nwin = number of taper windows
+	     b is fft of slepian eigentapers at zero freq 
+             Cee contains line frequency estimates and f-test parameter
+             return:
+              Fvalue
+
+           see equation 13.10 in Thomson (1982)
+           or page 499 in Percival and Walden (1993)
 	 */
 	double          sum, sumr, sumi, sum2;
 	int             i, j, k;
-	double         *amur, *amui;
+	double         *Ceer, *Ceei;
 	sum = 0.;
-	amur = dvector((long) 0, (long) nf);
-	amui = dvector((long) 0, (long) nf);
 
+	Ceer = (double *) malloc((size_t) nf * sizeof(double));
+	Ceei = (double *) malloc((size_t) nf * sizeof(double));
+
+	
 
 
 	for (i = 0; i < nwin; i++) {
@@ -30,25 +32,25 @@
 		sum = sum + b[i] * b[i];
 	}
 	for (i = 0; i < nf; i++) {
-		amur[i] = 0.;
-		amui[i] = 0.;
+		Ceer[i] = 0.;
+		Ceei[i] = 0.;
 		for (j = 0; j < nwin; j++) {
 			k = i + j * nf;
-			amur[i] = amur[i] + sr[k] * b[j];
-			amui[i] = amui[i] + si[k] * b[j];
+			Ceer[i] = Ceer[i] + sr[k] * b[j];
+			Ceei[i] = Ceei[i] + si[k] * b[j];
 		}
-		amur[i] = amur[i] / sum;
-		amui[i] = amui[i] / sum;
+		Ceer[i] = Ceer[i] / sum;
+		Ceei[i] = Ceei[i] / sum;
 		sum2 = 0.;
 		for (j = 0; j < nwin; j++) {
 			k = i + j * nf;
-			sumr = sr[k] - amur[i] * b[j];
-			sumi = si[k] - amui[i] * b[j];
+			sumr = sr[k] - Ceer[i] * b[j];
+			sumi = si[k] - Ceei[i] * b[j];
 			sum2 = sum2 + sumr * sumr + sumi * sumi;
 		}
-		Fvalue[i] = (float) (nwin - 1) * (SQR(amui[i]) + SQR(amur[i])) * sum / sum2;
-                /* percival and walden, eq 499c, p499 */
-              /* sum = Hk(0) squared  */
+		Fvalue[i] = (float) (nwin - 1) * (SQR(Ceei[i]) + SQR(Ceer[i])) * sum / sum2;
 	}
+          free(Ceei);
+          free(Ceer);
 	return;
 }
